@@ -127,4 +127,4 @@ git commit -m "Description of the feature or fix"
 
 ### License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT [License](https://github.com/TobiaRigon/BiDirectionalSync-API-SQL/blob/main/LICENSE) - see the LICENSE file for details.
