@@ -2,7 +2,6 @@
 //==== RICEZIONE DEI DATI ====
 // Variabile globale per contare le chiamate API
 $apiCallCount = 0;
-
 // CHIAMATE PARALLELE
 // Funzione per ottenere i dati API in base al tablecode sinc
 function getApiDataPage($tablecode, $skipArray)
@@ -125,7 +124,6 @@ function getApiData($tablecode)
 
     return json_encode($allData);
 }
-
 // // CHIAMATE SINCRONE
 // Funzione per ottenere i dati API in base al tablecode
 // function getApiDataPage($tablecode, $skip)
@@ -259,8 +257,6 @@ function getApiData($tablecode)
 //     // Converti tutti i dati in JSON
 //     return json_encode($allData);
 // }
-
-
 // Funzione per ottenere la query SQL in base al tablecode
 function getQuery($tablecode)
 {
