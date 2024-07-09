@@ -1,7 +1,7 @@
 <?php
 ini_set('max_execution_time', 600); // Aumenta il tempo massimo di esecuzione a 600 secondi
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once 'functions.php';
 require_once 'config.php';
 

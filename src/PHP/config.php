@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
 // Carica il file .env
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
 
@@ -12,7 +12,7 @@ $dotenv->load();
 define('LOG_FILE', './../json/discrepancy_log.json');
 define('LAST_LOG_FILE', './../json/last_discrepancy_log.json');
 define('LOG_ELIMINATI', './../json/log_eliminati.json');
-define('FIRST_EXECUTION_FILE', './../first_execution.log');
+define('FIRST_EXECUTION_FILE', './../../first_execution.log');
 
 
 // Inizializza i file di log se non esistono
