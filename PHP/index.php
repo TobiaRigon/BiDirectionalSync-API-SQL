@@ -1,7 +1,7 @@
 <?php
 ini_set('max_execution_time', 600); // Aumenta il tempo massimo di esecuzione a 600 secondi
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once 'functions.php';
 require_once 'config.php';
 
@@ -230,17 +230,17 @@ foreach ($datiMancantiPerSql as $dato) {
 
 // Inizializza il file di log
 $logFileEliminati = 'log_eliminati.json';
-inizializzaLogEliminati($logFileEliminati);
+inizializzaLogEliminati(LOG_ELIMINATI);
 
 // Aggiungi debug per verificare i dati eliminati in SQL
 echo "DEBUG - Dati eliminati in SQL:<br>";
 print_r($datiEliminatiInSql);
 
 // Aggiorna il file di log con i nuovi record eliminati
-aggiornaLogEliminati($logFileEliminati, $datiEliminatiInSql);
+aggiornaLogEliminati(LOG_ELIMINATI, $datiEliminatiInSql);
 
 // Sincronizza il log dei dati eliminati con i dati dell'API
-sincronizzaLogConApi($logFileEliminati);
+sincronizzaLogConApi(LOG_ELIMINATI);
 
 // Controlla se l'esecuzione è bloccata
 if (BLOCCA_ESECUZIONE) {

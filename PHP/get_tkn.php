@@ -2,7 +2,7 @@
 
 require_once 'functions.php';
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
 
@@ -12,7 +12,7 @@ use Dotenv\Dotenv;
 
 // Carica il file .env
 
-$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 
 $dotenv->load();
 
@@ -127,7 +127,7 @@ function updateEnvFile($token)
 
 {
 
-    $envFilePath = __DIR__ . '/.env';
+    $envFilePath = __DIR__ . '/../.env';
 
     $envContent = file_get_contents($envFilePath);
 
