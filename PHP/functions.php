@@ -413,7 +413,7 @@ function truncateFields($data, $tablecode)
 // Funzione per verificare se è la prima esecuzione dello script
 function isFirstExecution()
 {
-    $firstExecutionFile = 'first_execution.log';
+    $firstExecutionFile = FIRST_EXECUTION_FILE;
     if (!file_exists($firstExecutionFile)) {
         file_put_contents($firstExecutionFile, 'Delete this file before running the script for the first time to prevent unwanted modifications');
         echo "Prima esecuzione: BLOCCA_ESECUZIONE automatico attivo.\n </br>";
