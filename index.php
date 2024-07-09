@@ -153,7 +153,6 @@ foreach ($tablecodes as $tablecode) {
     genera_query_aggiornamento_per_dati_discordanti($apiDataNew);
 }
 
-
 // Debug: Stampa i dati mancanti da inviare all'API
 echo "DEBUG - Dati mancanti da inviare all'API:<br>";
 print_r($bulkData);

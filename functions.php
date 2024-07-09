@@ -426,16 +426,6 @@ function isFirstExecution()
     echo "Esecuzione successiva: BLOCCA_ESECUZIONE automatico non attivo di default.\n </br>";
     return false;
 }
-function registra_discrepanze($nuoveDiscrepanze, $filename)
-{
-    // Elimina il file se esiste
-    if (file_exists($filename)) {
-        unlink($filename);
-    }
-
-    // Riscrivi il file con le nuove discrepanze
-    file_put_contents($filename, json_encode($nuoveDiscrepanze, JSON_PRETTY_PRINT));
-}
 //==== CONFRONTO DEI DATI ========================================================================================================================
 // Funzione per confrontare le descrizioni
 function confronta_descrizioni($item, $item2, $logEntry, $lastLogEntry)
@@ -566,7 +556,6 @@ function confronta_dati($data1, $data2, $tablecode, &$bulkData, &$datiMancantiPe
 {
     global $tablecodesConfig;
     $risultati = [];
-    $discrepanze = [];
 
     if (!isset($tablecodesConfig[$tablecode])) {
         die("Configurazione per tablecode $tablecode non trovata.");
@@ -612,11 +601,6 @@ function confronta_dati($data1, $data2, $tablecode, &$bulkData, &$datiMancantiPe
                 'logEntry' => $log[$tablecode][$code] ?? null,
                 'lastLogEntry' => $lastLog[$tablecode][$code] ?? null
             ];
-
-            // Aggiungi la riga alle discrepanze se ha una incongruenza
-            if ($status === 'incongruenza dati') {
-                $discrepanze[] = end($risultati);
-            }
         } else {
             if (!empty(trim($item['description']))) {
                 $log = aggiorna_log($log, $tablecode, $code, $item['description'], null, [], $timestamp);
@@ -698,9 +682,6 @@ function confronta_dati($data1, $data2, $tablecode, &$bulkData, &$datiMancantiPe
             }
         }
     }
-
-    // Registra le discrepanze in un file JSON
-    registra_discrepanze($discrepanze, 'discrepancy_data.json');
 
     scrivi_log($log, LOG_FILE);
 
@@ -801,7 +782,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
     $datiRimossiInApi = [];
     $datiRimossiInSql = [];
     $datiDiscordantiNuoviInApi = [];
-    $incongruenzeIndeterminate = [];
 
     echo "<h3>Debug per il tablecode: $tablecode</h3>";
 
@@ -836,7 +816,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                 echo "Risultato: Dato aggiunto in API.<br>";
             } elseif ($logEntry && $currentLogEntry && $logEntry == $currentLogEntry) {
                 echo "Risultato: Impossibile determinare, log invariato.<br>";
-                $incongruenzeIndeterminate[] = $riga;
             } elseif (!empty($logEntry['description_api']) && !empty($logEntry['description_sql'])) {
                 $datiRimossiInSql[] = $riga;
                 echo "Risultato: Dato rimosso in SQL.<br>";
@@ -847,7 +826,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                 ];
             } else {
                 echo "Risultato: Impossibile determinare.<br>";
-                $incongruenzeIndeterminate[] = $riga;
             }
         }
     } else {
@@ -873,7 +851,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                 echo "Risultato: Dato aggiunto in SQL.<br>";
             } elseif ($logEntry && $currentLogEntry && $logEntry == $currentLogEntry) {
                 echo "Risultato: Impossibile determinare, log invariato.<br>";
-                $incongruenzeIndeterminate[] = $riga;
             } elseif (!empty($logEntry['description_api']) && !empty($logEntry['description_sql'])) {
                 $datiRimossiInApi[] = $riga;
                 echo "Risultato: Dato rimosso in API.<br>";
@@ -884,7 +861,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                 ];
             } else {
                 echo "Risultato: Impossibile determinare.<br>";
-                $incongruenzeIndeterminate[] = $riga;
             }
         }
     } else {
@@ -912,7 +888,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                     $datiDiscordantiNuoviInApi[] = $riga;
                 } else {
                     echo "Impossibile determinare dato nuovo<br>";
-                    $incongruenzeIndeterminate[] = $riga;
                 }
             }
 
@@ -930,7 +905,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                         $datiDiscordantiNuoviInApi[] = $riga;
                     } else {
                         echo "Impossibile determinare dato nuovo per $field<br>";
-                        $incongruenzeIndeterminate[] = $riga;
                     }
                 }
             }
@@ -968,16 +942,48 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
         ];
 
         foreach ($data['fields'] as $field => $result) {
-            $dataToPush[$field] = $result['sql'];
+            if (isset($result['sql'])) {
+                $dataToPush[$field] = $result['sql'];
+            }
         }
+
+        foreach ($data as $key => $value) {
+            if (!in_array($key, ['tblcode', 'code_sql', 'description_sql', 'dropped', 'fields', 'status', 'logEntry', 'lastLogEntry']) && !isset($dataToPush[$key])) {
+                $dataToPush[$key] = $value;
+            }
+        }
+
+        echo "DEBUG - Aggiungere a bulkData (sqlDataNew):\n";
+        print_r($dataToPush);
+
         $bulkData[$tablecode][] = $dataToPush;
     }
 
-    // Aggiungi le incongruenze indeterminate al log delle discrepanze
-    registra_discrepanze($incongruenzeIndeterminate, 'discrepancy_data.json');
+    // foreach ($apiDataNew as $data) {
+    //     $dataToPush = [
+    //         'code' => $data['code_api'],
+    //         'description' => $data['description_api']
+    //     ];
 
-    echo "<h4>Bulk Data:</h4>";
-    print_r($bulkData);
+    //     foreach ($data['fields'] as $field => $result) {
+    //         if (isset($result['api'])) {
+    //             $dataToPush[$field] = $result['api'];
+    //         }
+    //     }
+
+    //     foreach ($data as $key => $value) {
+    //         if (!in_array($key, ['tblcode', 'code_api', 'description_api', 'dropped', 'fields', 'status', 'logEntry', 'lastLogEntry']) && !isset($dataToPush[$key])) {
+    //             $dataToPush[$key] = $value;
+    //         }
+    //     }
+
+    //     echo "DEBUG - Aggiungere a bulkData (apiDataNew):\n";
+    //     print_r($dataToPush);
+
+    //     $bulkData[$tablecode][] = $dataToPush;
+    // }
+
+    return [$sqlDataNew, $apiDataNew, $datiAggiuntiInApi, $datiAggiuntiInSql, $datiRimossiInApi, $datiRimossiInSql];
 }
 //==== Inserimento e Aggiornamento Dati in API================================================================================================
 // Funzione per inviare i dati all'API in un'unica chiamata PUT

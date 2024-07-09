@@ -80,51 +80,39 @@ $tablecodesConfig = [
     // Add more table configurations here
 ];
 ```
-
 ### Logging
 
-    Discrepancy Log: discrepancy_log.json logs all discrepancies found during synchronization.
-    Previous Log: last_discrepancy_log.json stores the log from the previous run to help identify changes.
+- **Discrepancy Log**: `discrepancy_log.json` logs all discrepancies found during synchronization.
+- **Previous Log**: `last_discrepancy_log.json` stores the log from the previous run to help identify changes.
 
-### Contributing
+## Contributing
 
 We welcome contributions to BiDirectionalSync-API-SQL! Here’s how you can help:
 
-1. *Fork the repository* on GitHub.
-
-2. *Clone your fork* locally:
-
-```sh
-
-git clone https://github.com/yourusername/BiDirectionalSync-API-SQL.git
+1. **Fork the repository** on GitHub.
+    
+2. **Clone your fork** locally:
+    
+    ```sh
+    git clone https://github.com/TobiaRigon/BiDirectionalSync-API-SQL.git
 cd BiDirectionalSync-API-SQL
+
 ```
-
-3. *Create a new branch* for your feature or bugfix:
-
+3. **Create a new branch** for your feature or bugfix:
 ```sh
-
 git checkout -b feature-or-bugfix-name
 ```
-
-4. *Make your changes* and add tests if applicable.
-
-5. *Commit your changes* with a meaningful commit message:
-
+4. **Make your changes** and add tests if applicable.
+    
+5. **Commit your changes** with a meaningful commit message:
 ```sh
-
 git commit -m "Description of the feature or fix"
 ```
-
-6. *Push your branch* to your forked repository:
-
-```sh
-
-    git push origin feature-or-bugfix-name
+6. **Push your branch** to your forked repository:
+ ```sh
+git push origin feature-or-bugfix-name
 ```
+7. **Open a Pull Request** on the original repository. Provide a detailed description of your changes and any relevant information for the maintainers to review.
+## License
 
-7. *Open a Pull Request* on the original repository. Provide a detailed description of your changes and any relevant information for the maintainers to review.
-
-### License
-
-This project is licensed under the MIT [License](https://github.com/TobiaRigon/BiDirectionalSync-API-SQL/blob/main/LICENSE) - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
