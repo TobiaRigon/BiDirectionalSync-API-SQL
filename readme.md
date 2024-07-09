@@ -115,4 +115,4 @@ git push origin feature-or-bugfix-name
 7. **Open a Pull Request** on the original repository. Provide a detailed description of your changes and any relevant information for the maintainers to review.
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/TobiaRigon/BiDirectionalSync-API-SQL/blob/main/LICENSE) file for details.
