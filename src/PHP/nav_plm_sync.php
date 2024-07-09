@@ -246,3 +246,29 @@ sincronizzaLogConApi(LOG_ELIMINATI);
 if (BLOCCA_ESECUZIONE) {
     echo "Blocco esecuzione attivo: tutte le chiamate API e le query SQL sono disabilitate.<br>";
 }
+
+// Esegui il controllo e l'aggiornamento dei log una seconda volta
+echo "Eseguendo il secondo controllo e aggiornamento dei log...\n";
+foreach ($tablecodes as $tablecode) {
+    // Recupera i dati dal database SQL
+    $mssqlDataJson = getSqlData($tablecode);
+    // Recupera i dati dall'API
+    $apiDataJson = getApiData($tablecode);
+
+    // Decodifica i dati JSON
+    $mssqlData = json_decode($mssqlDataJson, true);
+    $apiData = json_decode($apiDataJson, true);
+
+    // Verifica se i dati sono validi
+    if (!is_array($mssqlData) || !is_array($apiData)) {
+        echo "Errore nella decodifica dei dati JSON per il tablecode $tablecode.<br>";
+        continue;
+    }
+
+    // Confronta i dati tra SQL e API
+    $risultati = confronta_dati($mssqlData, $apiData, $tablecode, $bulkData, $datiMancantiPerSql, $datiEliminatiInSql);
+}
+
+// Aggiorna i file di log
+aggiornaLogEliminati(LOG_ELIMINATI, $datiEliminatiInSql);
+sincronizzaLogConApi(LOG_ELIMINATI);
