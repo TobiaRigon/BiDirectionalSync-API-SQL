@@ -76,6 +76,9 @@ function getApiDataPage($tablecode, $skipArray)
             }
         }
 
+        // Stampa l'URL per il debug
+        echo "DEBUG - Endpoint API:(getApiDataPage): $url\n";
+
         $result = array_merge($result, $data);
         curl_multi_remove_handle($mh, $ch);
     }
