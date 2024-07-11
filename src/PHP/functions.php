@@ -875,10 +875,10 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
             print_r($riga['logEntry']);
 
             if ($riga['description_sql'] != $riga['description_api']) {
-                if ($riga['logEntry']['description_sql'] != $riga['lastLogEntry']['description_sql']) {
+                if ($riga['logEntry']['description_sql'] != $riga['lastLogEntry']['description_sql'] && !(is_null($riga['lastLogEntry']['description_sql']) && !is_null($riga['logEntry']['description_sql']))) {
                     echo "Dato nuovo: SQL<br>";
                     $sqlDataNew[] = $riga;
-                } elseif ($riga['logEntry']['description_api'] != $riga['lastLogEntry']['description_api']) {
+                } elseif ($riga['logEntry']['description_api'] != $riga['lastLogEntry']['description_api'] && !(is_null($riga['lastLogEntry']['description_api']) && !is_null($riga['logEntry']['description_api']))) {
                     echo "Dato nuovo: API<br>";
                     $apiDataNew[] = $riga;
                     $datiDiscordantiNuoviInApi[] = $riga;
@@ -892,10 +892,10 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
                 if ($result['status'] === 'incongruenza dati') {
                     echo "$field SQL: {$result['sql']}, $field API: {$result['api']}<br>";
 
-                    if (isset($riga['logEntry']['fields'][$field]['sql']) && isset($riga['lastLogEntry']['fields'][$field]['sql']) && $riga['logEntry']['fields'][$field]['sql'] != $riga['lastLogEntry']['fields'][$field]['sql']) {
+                    if (isset($riga['logEntry']['fields'][$field]['sql']) && isset($riga['lastLogEntry']['fields'][$field]['sql']) && $riga['logEntry']['fields'][$field]['sql'] != $riga['lastLogEntry']['fields'][$field]['sql'] && !(is_null($riga['lastLogEntry']['fields'][$field]['sql']) && !is_null($riga['logEntry']['fields'][$field]['sql']))) {
                         echo "Dato nuovo per $field: SQL<br>";
                         $sqlDataNew[] = $riga;
-                    } elseif (isset($riga['logEntry']['fields'][$field]['api']) && isset($riga['lastLogEntry']['fields'][$field]['api']) && $riga['logEntry']['fields'][$field]['api'] != $riga['lastLogEntry']['fields'][$field]['api']) {
+                    } elseif (isset($riga['logEntry']['fields'][$field]['api']) && isset($riga['lastLogEntry']['fields'][$field]['api']) && $riga['logEntry']['fields'][$field]['api'] != $riga['lastLogEntry']['fields'][$field]['api'] && !(is_null($riga['lastLogEntry']['fields'][$field]['api']) && !is_null($riga['logEntry']['fields'][$field]['api']))) {
                         echo "Dato nuovo per $field: API<br>";
                         $apiDataNew[] = $riga;
                         $datiDiscordantiNuoviInApi[] = $riga;
@@ -928,7 +928,7 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
     echo "<h4>Dati rimossi in SQL:</h4>";
     print_r($datiRimossiInSql);
 
-    echo "<h4>Dati discordanti con dato nuovo in API2:</h4>";
+    echo "<h4>Dati discordanti con dato nuovo in API:</h4>";
     print_r($datiDiscordantiNuoviInApi);
 
     foreach ($sqlDataNew as $data) {
@@ -954,30 +954,6 @@ function debug_confronto_dati($risultati, $tablecode, &$datiEliminatiInSql, &$bu
 
         $bulkData[$tablecode][] = $dataToPush;
     }
-
-    // foreach ($apiDataNew as $data) {
-    //     $dataToPush = [
-    //         'code' => $data['code_api'],
-    //         'description' => $data['description_api']
-    //     ];
-
-    //     foreach ($data['fields'] as $field => $result) {
-    //         if (isset($result['api'])) {
-    //             $dataToPush[$field] = $result['api'];
-    //         }
-    //     }
-
-    //     foreach ($data as $key => $value) {
-    //         if (!in_array($key, ['tblcode', 'code_api', 'description_api', 'dropped', 'fields', 'status', 'logEntry', 'lastLogEntry']) && !isset($dataToPush[$key])) {
-    //             $dataToPush[$key] = $value;
-    //         }
-    //     }
-
-    //     echo "DEBUG - Aggiungere a bulkData (apiDataNew):\n";
-    //     print_r($dataToPush);
-
-    //     $bulkData[$tablecode][] = $dataToPush;
-    // }
 
     return [$sqlDataNew, $apiDataNew, $datiAggiuntiInApi, $datiAggiuntiInSql, $datiRimossiInApi, $datiRimossiInSql];
 }
