@@ -443,6 +443,7 @@ $tablecodesConfig = [
         'code_mapping' => 'No_'
 
     ],
+    // Da testare
     'MO' => [
         'query' => "SELECT 
         [Code] as code, 'S01' as siteid, 'MO' as tblcode, CASE [Description] WHEN '' THEN [Code] ELSE [Description] END as description, CASE [Enabled] WHEN 0 THEN 'true' ELSE 'false' END as dropped
@@ -585,8 +586,8 @@ $tablecodesConfig = [
         'S' as code,
         'Seriale' as description,
         '' as disabled
-    UNION	
-    SELECT
+        UNION	
+        SELECT
         'TL' as tblcode,
         'S01' as siteid,
         'P' as code,
@@ -599,7 +600,6 @@ $tablecodesConfig = [
         'required_fields' => [],
         'code_mapping' => '',
     ],
-
     // Tabelle Asset
     'SUP' => [
         'query' => "SELECT 'S01' as siteid, 'S01SUP' as defid, 'ASSET' as objtype, [No_] as code, [Name] as description from [dbo].[Pelletterie Palladio\$Vendor] (nolock)",
