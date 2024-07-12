@@ -472,7 +472,7 @@ $tablecodesConfig = [
         [Name] as description,
         'false' as dropped,
         0 as 'Tempo Stimato Setup'
-        FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Work Center]",
+        FROM [PP_2017_TST].[dbo].[Pelletterie Palladio\$Work Center]",
         'table_name' => 'Phase of routing',
         'fields' => '',
         'database' => 'PP_2017_TST',
@@ -487,37 +487,37 @@ $tablecodesConfig = [
             'description' => 'Name'
         ]
     ],
-    'WC' => [
-        'query' => "SELECT
-        'WC' as tblcode,
-        'S01' as siteid,
-        [No_] as code,
-        [Name] as description,
-        'false' as disabled,
-        [Work Center Group Code] as GroupCode_WC,
-        [Subcontractor No_] as Cod_Terzista
-        FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Work Center] (nolock)",
-        'table_name' => 'Work Center',
-        'fields' => '',
-        'database' => 'PP_2017_TST',
-        'table' => 'Pelletterie Palladio$Work Center',
-        'required_fields' => [
-            'No_',
-            'Name'
-        ],
-        'code_mapping' => 'No_',
-        'field_mapping' => [
-            'code' => 'No_',
-            'description' => 'Name',
-        ]
-    ],
+    // 'WC' => [
+    //     'query' => "SELECT
+    //     'WC' as tblcode,
+    //     'S01' as siteid,
+    //     [No_] as code,
+    //     [Name] as description,
+    //     'false' as disabled,
+    //     [Work Center Group Code] as GroupCode_WC,
+    //     [Subcontractor No_] as Cod_Terzista
+    //     FROM [PP_2017_TST].[dbo].[Pelletterie Palladio\$Work Center] (nolock)",
+    //     'table_name' => 'Work Center',
+    //     'fields' => '',
+    //     'database' => 'PP_2017_TST',
+    //     'table' => 'Pelletterie Palladio$Work Center',
+    //     'required_fields' => [
+    //         'No_',
+    //         'Name'
+    //     ],
+    //     'code_mapping' => 'No_',
+    //     'field_mapping' => [
+    //         'code' => 'No_',
+    //         'description' => 'Name',
+    //     ]
+    // ],
     'GC' => [
         'query' => "SELECT
         'GC' as tblcode,
         'S01' as siteid,
         [Code] as code,
         [Name] as description
-        FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Work Center Group] (nolock)",
+        FROM [PP_2017_TST].[dbo].[Pelletterie Palladio\$Work Center Group] (nolock)",
         'table_name' => 'Work Center Group Code',
         'fields' => '',
         'database' => 'PP_2017_TST',
@@ -539,7 +539,7 @@ $tablecodesConfig = [
         [Code] as code,
         [Description] as description,
         'false' as disabled
-        FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Routing Link] (nolock)",
+        FROM [PP_2017_TST].[dbo].[Pelletterie Palladio\$Routing Link] (nolock)",
         'table_name' => 'Routing Link',
         'fields' => '',
         'database' => 'PP_2017_TST',
@@ -561,8 +561,8 @@ $tablecodesConfig = [
         [Wip code] as code,
         [Description] as description,
         'false' as disabled,
-        [Transfer from-Location Code] as transfer_from_location
-        FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Code WIP] (nolock)",
+        [Transfer from-Location Code] 
+        FROM [PP_2017_TST].[dbo].[Pelletterie Palladio\$Code WIP] (nolock)",
         'table_name' => 'Code WIP',
         'fields' => 'attrc01',
         'database' => 'PP_2017_TST',
@@ -576,30 +576,30 @@ $tablecodesConfig = [
         'field_mapping' => [
             'code' => 'Wip code',
             'description' => 'Description',
-            'attrc01' => 'transfer_from_location'
+            'attrc01' => 'Transfer from-Location Code'
         ]
     ],
-    'TL' => [
-        'query' => "SELECT 
-        'TL' as tblcode,
-        'S01' as siteid,
-        'S' as code,
-        'Seriale' as description,
-        '' as disabled
-        UNION	
-        SELECT
-        'TL' as tblcode,
-        'S01' as siteid,
-        'P' as code,
-        'Parallelo' as description,
-        '' as disabled",
-        'table_name' => 'Transmission Line',
-        'fields' => '',
-        'database' => 'PP_2017_TST', // Anche se questa query non usa una tabella specifica, si può mantenere la coerenza
-        'table' => '', // Non specificato poiché la query non utilizza una tabella
-        'required_fields' => [],
-        'code_mapping' => '',
-    ],
+    // 'TL' => [
+    //     'query' => "SELECT 
+    //     'TL' as tblcode,
+    //     'S01' as siteid,
+    //     'S' as code,
+    //     'Seriale' as description,
+    //     '' as disabled
+    //     UNION	
+    //     SELECT
+    //     'TL' as tblcode,
+    //     'S01' as siteid,
+    //     'P' as code,
+    //     'Parallelo' as description,
+    //     '' as disabled",
+    //     'table_name' => 'Transmission Line',
+    //     'fields' => '',
+    //     'database' => 'PP_2017_TST', // Anche se questa query non usa una tabella specifica, si può mantenere la coerenza
+    //     'table' => '', // Non specificato poiché la query non utilizza una tabella
+    //     'required_fields' => [],
+    //     'code_mapping' => '',
+    // ],
     // Tabelle Asset
     'SUP' => [
         'query' => "SELECT 'S01' as siteid, 'S01SUP' as defid, 'ASSET' as objtype, [No_] as code, [Name] as description from [dbo].[Pelletterie Palladio\$Vendor] (nolock)",

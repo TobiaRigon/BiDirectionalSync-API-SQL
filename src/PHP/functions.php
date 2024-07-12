@@ -292,6 +292,7 @@ function getSqlData($tablecode)
     // Esegui la query SQL
     $stmt = sqlsrv_query($msconn, getQuery($tablecode));
 
+
     // Verifica se la query è fallita
     if ($stmt === false) {
         die(print_r(sqlsrv_errors(), true));
@@ -383,7 +384,7 @@ function convertToUtf8($value)
     // Verifica se il valore è già codificato in UTF-8
     if (mb_detect_encoding($value, 'UTF-8', true) === false) {
         // Codifica il valore in UTF-8 se non lo è già
-        $value = utf8_encode($value);
+        $value = mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1');
     }
     // Rimuovi eventuali caratteri non validi
     return mb_convert_encoding($value, 'UTF-8', 'UTF-8');
@@ -1394,19 +1395,12 @@ function genera_query_aggiornamento($tablecode, $apiData)
         $addedColumns[] = $codeField;
     }
 
-    // Aggiungere 'Name' o 'Description' mappato correttamente per SUP
-    if ($tablecode === 'SUP') {
-        if (isset($apiData['description']) && !in_array('Name', $addedColumns)) {
-            $columns[] = '[Name] = ?';
-            $values[] = $apiData['description'];
-            $addedColumns[] = 'Name';
-        }
-    } else {
-        if (isset($apiData['description']) && !in_array('Description', $addedColumns)) {
-            $columns[] = '[Description] = ?';
-            $values[] = $apiData['description'];
-            $addedColumns[] = 'Description';
-        }
+    // Aggiungere 'Name' o 'Description' mappato correttamente
+    $descriptionField = $config['field_mapping']['description'] ?? 'Description';
+    if (isset($apiData['description']) && !in_array($descriptionField, $addedColumns)) {
+        $columns[] = "[$descriptionField] = ?";
+        $values[] = $apiData['description'];
+        $addedColumns[] = $descriptionField;
     }
 
     // Troncamento dei campi specificati
@@ -1717,9 +1711,18 @@ function genera_query_aggiornamento_per_dati_discordanti($datiDiscordantiNuoviIn
         $originalDatabaseName = $config['database'];
         $fieldMapping = isset($config['field_mapping']) ? $config['field_mapping'] : [];
         $truncateFields = $config['truncate_fields'] ?? [];
+        $codeField = $config['code_mapping'] ?? 'No_'; // Utilizza la mappatura del campo code
 
         // Costruzione della query di aggiornamento
-        $updateQuery = "UPDATE [$originalDatabaseName].[dbo].[$originalTableName] SET [Description] = '$description'";
+        $updateQuery = "UPDATE [$originalDatabaseName].[dbo].[$originalTableName] SET";
+
+        // Aggiungi il campo description se mappato
+        if (isset($fieldMapping['description'])) {
+            $descriptionField = $fieldMapping['description'];
+            $updateQuery .= " [$descriptionField] = '$description'";
+        } else {
+            $updateQuery .= " [Description] = '$description'";
+        }
 
         foreach ($fields as $field => $value) {
             $fieldSql = isset($fieldMapping[$field]) ? $fieldMapping[$field] : $field;
@@ -1762,7 +1765,8 @@ function genera_query_aggiornamento_per_dati_discordanti($datiDiscordantiNuoviIn
             }
         }
 
-        $updateQuery .= " WHERE [No_] = '$code';";
+        // Usa la mappatura del campo code
+        $updateQuery .= " WHERE [$codeField] = '$code';";
 
         echo "Query di aggiornamento:\n$updateQuery\n";
         // Esegui la query di aggiornamento
