@@ -109,13 +109,18 @@ function findMatchingItems($sqlItems, $apiItems)
 }
 
 // Funzione per preparare i dati da inviare in bulk all'API
-function prepareBulkData($matchedItems, $sqlItems)
+function prepareBulkData($matchedItems, $sqlItems, $uploadedImages)
 {
     $bulkData = [];
     foreach ($sqlItems as $sqlItem) {
         if (in_array($sqlItem['Item'], $matchedItems)) {
             $filePath = realpath($sqlItem['Image_Path']);
             if ($filePath !== false && is_file($filePath)) { // Aggiungi controllo per file esistente e non directory
+                if (isset($uploadedImages[$filePath])) {
+                    // Salta il caricamento se l'immagine è già stata caricata
+                    continue;
+                }
+
                 // Controlla il tipo MIME e l'estensione del file
                 $mimeType = getMimeType($filePath);
                 $correctExt = getCorrectExtension($mimeType);
@@ -127,7 +132,6 @@ function prepareBulkData($matchedItems, $sqlItems)
                         'doc_code' => $sqlItem['Item'],
                         'mediaTitle' => basename($filePath),
                         'file' => $filePath,
-                        // 'overrideId' => $sqlItem['Item'],
                     ];
                 } else {
                     echo "Tipo MIME non supportato per il file: " . $filePath . "\n";
@@ -140,44 +144,8 @@ function prepareBulkData($matchedItems, $sqlItems)
     return $bulkData;
 }
 
-// Funzione per ottenere il tipo MIME del file
-function getMimeType($filePath)
-{
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mimeType = finfo_file($finfo, $filePath);
-    finfo_close($finfo);
-    return $mimeType;
-}
-
-// Funzione per ottenere l'estensione corretta in base al tipo MIME
-function getCorrectExtension($mimeType)
-{
-    $extensions = [
-        'image/jpeg' => 'jpg',
-        'image/png' => 'png',
-        'image/gif' => 'gif',
-        'image/bmp' => 'bmp',
-        'image/webp' => 'webp'
-    ];
-    return $extensions[$mimeType] ?? null;
-}
-
-// Funzione per rinominare il file se necessario
-function renameFileIfNecessary($filePath, $correctExt)
-{
-    $currentExt = pathinfo($filePath, PATHINFO_EXTENSION);
-    if ($currentExt !== $correctExt) {
-        $newPath = pathinfo($filePath, PATHINFO_DIRNAME) . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.' . $correctExt;
-        if (!rename($filePath, $newPath)) {
-            throw new Exception("Error renaming file from $filePath to $newPath");
-        }
-        return $newPath;
-    }
-    return $filePath;
-}
-
 // Funzione per inviare i dati all'API
-function uploadMedia($bulkData)
+function uploadMedia($bulkData, &$uploadedImages)
 {
     $responses = [];
 
@@ -198,12 +166,13 @@ function uploadMedia($bulkData)
             'defid' => $data['defid'],
             'doc_code' => $data['doc_code'],
             'mediaTitle' => $data['mediaTitle'],
-            // 'overrideId' => $data['overrideId'],
             'file' => new CURLFile($imagePath, $mimeType, basename($imagePath))
         ]);
 
         if ($response) {
             $responses[] = $response;
+            // Aggiorna il file JSON con il nuovo percorso dell'immagine
+            $uploadedImages[$imagePath] = true;
         } else {
             $responses[] = [
                 'status' => 'errore',
@@ -234,4 +203,37 @@ function makeCurlRequest($url, $postData)
 
     curl_close($ch);
     return json_decode($response, true);
+}
+
+function getMimeType($filePath)
+{
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $filePath);
+    finfo_close($finfo);
+    return $mimeType;
+}
+
+function getCorrectExtension($mimeType)
+{
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+        'image/bmp' => 'bmp',
+        'image/webp' => 'webp'
+    ];
+    return $extensions[$mimeType] ?? null;
+}
+
+function renameFileIfNecessary($filePath, $correctExt)
+{
+    $currentExt = pathinfo($filePath, PATHINFO_EXTENSION);
+    if ($currentExt !== $correctExt) {
+        $newPath = pathinfo($filePath, PATHINFO_DIRNAME) . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.' . $correctExt;
+        if (!rename($filePath, $newPath)) {
+            throw new Exception("Error renaming file from $filePath to $newPath");
+        }
+        return $newPath;
+    }
+    return $filePath;
 }
