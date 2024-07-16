@@ -1,6 +1,7 @@
 <?php
 require_once 'functions_sync.php'; // Include le funzioni e la configurazione necessarie
-
+require_once 'get_tkn.php';
+refreshToken(); // Aggiorna Token
 // Recupera le immagini con le relative Source Primary Key 1
 $sqlItems = getSqlItemsWithImages();
 
