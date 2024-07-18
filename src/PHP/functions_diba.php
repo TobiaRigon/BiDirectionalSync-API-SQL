@@ -40,9 +40,9 @@ function getCodeToUpdate()
 // Funzione per ottenere i dati dalla pagina API con skip e limit
 function getApiPage($skip)
 {
-    $endpoint = 'https://palladio-uat.link.mylectra.com/link/api/v1/doc/S01MOD';
+    $endpoint = ASSET_API_URL;
     $token = API_TOKEN;
-    $url = $endpoint . "?limit=" . PER_PAGE . "&skip=" . $skip;
+    $url = $endpoint . 'S01MOD' . "?limit=" . PER_PAGE . "&skip=" . $skip;
     $headers = array(
         "Authorization: Bearer " . $token,
         "Content-Type: application/json"
@@ -63,7 +63,7 @@ function getApiPage($skip)
     curl_close($ch);
 
     $data = json_decode($response, true);
-
+    // echo $url;
     return $data;
 }
 
@@ -108,6 +108,10 @@ function getDocIds($allData, $codici)
                 break; // Una volta trovato il codice, possiamo passare al prossimo
             }
         }
+        // DEBUG Codici non trovati
+        // if (!$found) {
+        //     echo "Codice non trovato: $codice\n"; // Stampa se un codice non viene trovato
+        // }
     }
 
     return $docIds;
