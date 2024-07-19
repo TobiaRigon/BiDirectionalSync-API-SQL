@@ -26,6 +26,8 @@ if (!file_exists(LAST_LOG_FILE)) {
 define('API_TOKEN', getEnvVariable('API_TOKEN'));
 define('API_URL', getEnvVariable('API_URL'));
 define('ASSET_API_URL', getEnvVariable('ASSET_API_URL'));
+define('BASE_API_URL', getEnvVariable('BASE_API_URL'));
+
 
 // Definizione della costante per il numero di record per pagina
 define('PER_PAGE', 1000);
