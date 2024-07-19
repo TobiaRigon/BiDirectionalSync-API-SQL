@@ -115,10 +115,11 @@ function getDocIdsAndCreateMap($allData, $codici)
 
     return [$docIds, $docIdToCodeMap];
 }
+
 // Funzione per ottenere le informazioni dai docid
 function getDataFromDocIds($docIds)
 {
-    $responses = array();
+    $itemsToUpdate = array();
     $token = API_TOKEN;
     $baseUrl = BASE_API_URL . 'documents/S01/S01MOD/';
 
@@ -149,6 +150,8 @@ function getDataFromDocIds($docIds)
 
     return $itemsToUpdate;
 }
+
+
 // Funzione per estrarre i dati rilevanti
 function extractRelevantData($itemsToUpdate, $docIdToCodeMap)
 {
@@ -192,7 +195,7 @@ function extractRelevantData($itemsToUpdate, $docIdToCodeMap)
                                             'ordine' => $dataItem['ordine'] ?? null,
                                             'codice' => $dataItem['codice'] ?? null, // Lo stesso di doc_code
                                             'ordecolo' => $dataItem['ordecolo'] ?? null,
-                                            'stato' => $dataItem['stato'] ?? null,
+                                            'stato' => $dataItem['decode_stato']['display'] ?? null,
                                             'fproduzione' => $dataItem['fproduzione'] ?? null,
                                             'fcompletato' => $dataItem['fcompletato'] ?? null
                                         ];
@@ -219,3 +222,9 @@ function extractRelevantData($itemsToUpdate, $docIdToCodeMap)
 
     return $relevantData;
 }
+
+// Stato non viene recuperato correttamente deve vedersi display  "decode_stato": {
+                            //     "code": "N",
+                            //     "description": "Nuovo",
+                            //     "display": "N Nuovo"
+                            // },
