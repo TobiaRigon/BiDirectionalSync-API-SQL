@@ -222,9 +222,3 @@ function extractRelevantData($itemsToUpdate, $docIdToCodeMap)
 
     return $relevantData;
 }
-
-// Stato non viene recuperato correttamente deve vedersi display  "decode_stato": {
-                            //     "code": "N",
-                            //     "description": "Nuovo",
-                            //     "display": "N Nuovo"
-                            // },
