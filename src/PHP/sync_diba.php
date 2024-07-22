@@ -9,6 +9,7 @@ require_once 'functions_diba.php';
 // Definizione delle costanti
 define('SITE_ID', 'S01');
 define('TABLE_CODE', 'MOD');
+define('PER_PAGE', 1000); // Definisci il numero di record per pagina
 
 refreshToken(); // Aggiorna Token
 
@@ -60,9 +61,8 @@ print_r($result['missing']);
 echo "\n</br>-----------------------------</br>\n";
 
 
-// Genera le query di inserimento
-$missingRecords = $result['missing'];
-$insertQueries = generateInsertQueries($missingRecords);
+// Genera le query di inserimento con la mappatura inversa
+$insertQueries = generateInsertQueries($result['missing'], $columnMapping);
 
 // Stampa le query di inserimento
 echo "Insert Queries:\n\n";
@@ -70,9 +70,8 @@ foreach ($insertQueries as $query) {
     echo $query . "\n\n";
 }
 
-// Genera le query di aggiornamento
-$updatedRecords = $result['updated'];
-$updateQueries = generateUpdateQueries($updatedRecords);
+// Genera le query di aggiornamento con la mappatura inversa
+$updateQueries = generateUpdateQueries($result['updated'], $columnMapping);
 
 // Stampa le query di aggiornamento
 echo "Update Queries:\n\n";

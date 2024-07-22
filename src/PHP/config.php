@@ -27,6 +27,7 @@ define('API_TOKEN', getEnvVariable('API_TOKEN'));
 define('API_URL', getEnvVariable('API_URL'));
 define('ASSET_API_URL', getEnvVariable('ASSET_API_URL'));
 define('BASE_API_URL', getEnvVariable('BASE_API_URL'));
+define('MOD_ENDPOINT', getEnvVariable('MOD_ENDPOINT'));
 
 
 // Definizione della costante per il numero di record per pagina

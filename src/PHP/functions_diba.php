@@ -1,4 +1,19 @@
 <?php
+$columnMapping = [
+    'siteid' => '[Site ID]',
+    'defid' => '[Definition ID]',
+    'objtype' => '[Object Type]',
+    'doc_defid' => '[Document Definition ID]',
+    'doc_code' => '[Document Code]',
+    'doc_material' => '[Document Material]',
+    'doc_description' => '[Document Description]',
+    'ordine' => '[Order]',
+    'codice' => '[Code]',
+    'ordecolo' => '[Description]',
+    'stato' => '[Status]',
+    'fproduzione' => '[Production Flag]',
+    'fcompletato' => '[Completion Flag]'
+];
 // Funzione per ottenere i codici da aggiornare
 function getCodeToUpdate()
 {
@@ -353,62 +368,39 @@ function compareApiAndSqlData($apiData, $sqlData)
         'missing' => $missingRecords
     ];
 }
-function generateInsertQueries($records)
+function generateInsertQueries($missingRecords, $columnMapping)
 {
     $queries = [];
-
-    foreach ($records as $record) {
-        $siteid = $record['siteid'] ?? '';
-        $defid = $record['defid'] ?? '';
-        $objtype = $record['objtype'] ?? '';
-        $doc_defid = $record['doc_defid'] ?? '';
-        $doc_code = $record['doc_code'] ?? '';
-        $doc_material = $record['doc_material'] ?? '';
-        $doc_description = $record['doc_description'] ?? '';
-        $ordine = $record['ordine'] ?? 0;
-        $codice = $record['codice'] ?? '';
-        $ordecolo = $record['ordecolo'] ?? '';
-        $stato = $record['stato'] ?? '';
-        $fproduzione = $record['fproduzione'] ?? '';
-        $fcompletato = $record['fcompletato'] ?? '';
-
-        $query = "INSERT INTO [PP_2017_TST].[dbo].[Pelletterie Palladio\$Production BOM Header] 
-                  (siteid, defid, objtype, doc_defid, doc_code, doc_material, doc_description, ordine, codice, ordecolo, stato, fproduzione, fcompletato) 
-                  VALUES 
-                  ('$siteid', '$defid', '$objtype', '$doc_defid', '$doc_code', '$doc_material', '$doc_description', $ordine, '$codice', '$ordecolo', '$stato', '$fproduzione', '$fcompletato');";
-
-        $queries[] = $query;
+    foreach ($missingRecords as $record) {
+        $columns = [];
+        $values = [];
+        foreach ($record as $key => $value) {
+            if (isset($columnMapping[$key])) {
+                $columns[] = $columnMapping[$key];
+                $values[] = is_numeric($value) ? $value : "'" . str_replace("'", "''", $value) . "'";
+            }
+        }
+        $columnsStr = implode(', ', $columns);
+        $valuesStr = implode(', ', $values);
+        $queries[] = "INSERT INTO [PP_2017_TST].[dbo].[Pelletterie Palladio\$Production BOM Header] ($columnsStr) VALUES ($valuesStr);";
     }
-
     return $queries;
 }
-function generateUpdateQueries($records)
+function generateUpdateQueries($updatedRecords, $columnMapping)
 {
     $queries = [];
-
-    foreach ($records as $record) {
-        $siteid = $record['siteid'] ?? '';
-        $defid = $record['defid'] ?? '';
-        $objtype = $record['objtype'] ?? '';
-        $doc_defid = $record['doc_defid'] ?? '';
-        $doc_code = $record['doc_code'] ?? '';
-        $doc_material = $record['doc_material'] ?? '';
-        $doc_description = $record['doc_description'] ?? '';
-        $ordine = $record['ordine'] ?? 0;
-        $codice = $record['codice'] ?? '';
-        $ordecolo = $record['ordecolo'] ?? '';
-        $stato = $record['stato'] ?? '';
-        $fproduzione = $record['fproduzione'] ?? '';
-        $fcompletato = $record['fcompletato'] ?? '';
-
-        $query = "UPDATE [PP_2017_TST].[dbo].[Pelletterie Palladio\$Production BOM Header] SET 
-                  siteid = '$siteid', defid = '$defid', objtype = '$objtype', doc_defid = '$doc_defid', doc_material = '$doc_material', 
-                  doc_description = '$doc_description', ordine = $ordine, codice = '$codice', ordecolo = '$ordecolo', stato = '$stato', 
-                  fproduzione = '$fproduzione', fcompletato = '$fcompletato' 
-                  WHERE doc_code = '$doc_code';";
-
-        $queries[] = $query;
+    foreach ($updatedRecords as $record) {
+        $setClauses = [];
+        foreach ($record as $key => $value) {
+            if (isset($columnMapping[$key])) {
+                $column = $columnMapping[$key];
+                $value = is_numeric($value) ? $value : "'" . str_replace("'", "''", $value) . "'";
+                $setClauses[] = "$column = $value";
+            }
+        }
+        $setClauseStr = implode(', ', $setClauses);
+        $docCode = $record['doc_code']; // Assume 'doc_code' is the unique identifier for each record
+        $queries[] = "UPDATE [PP_2017_TST].[dbo].[Pelletterie Palladio\$Production BOM Header] SET $setClauseStr WHERE [Document Code] = '$docCode';";
     }
-
     return $queries;
 }
