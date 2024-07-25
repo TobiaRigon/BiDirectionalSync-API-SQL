@@ -25,8 +25,8 @@ function recuperaDatiDalDB($serverName, $database, $username, $password)
                 CASE BOMH.Status WHEN 0 THEN 'N' WHEN 1 THEN 'CE' WHEN 2 THEN 'IC' WHEN 3 THEN 'CL' END as stato,
                 CASE I.[Production BOM No_] WHEN BOMH.No_ THEN 'X' ELSE '' END as fproduzione,
                 CASE BOMH.[BOM Complete] WHEN 1 THEN 'X' ELSE '' END as fcompletato
-        FROM [PP_2017_TST].[dbo].[Pelletterie Palladio\$Production BOM Header] as BOMH (nolock)
-        INNER JOIN [PP_2017_TST].dbo.[Pelletterie Palladio\$Item] as I (nolock)
+        FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Production BOM Header] as BOMH (nolock)
+        INNER JOIN [PP_2017_PROD].dbo.[Pelletterie Palladio\$Item] as I (nolock)
             ON BOMH.[PFItem No_] = I.[No_] -- AND I.[Production BOM No_] <> I.[No_]
         WHERE I.[Item Category Code] = 'PF' -- and I.[No_] = 'LVM44875' -- 'LVGI0518'
         order by I.[No_], CASE I.[Production BOM No_] WHEN BOMH.No_ THEN 1 ELSE 2 END -- I.[Production BOM No_]
