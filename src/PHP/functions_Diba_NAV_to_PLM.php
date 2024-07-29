@@ -28,7 +28,7 @@ function recuperaDatiDalDB($serverName, $database, $username, $password)
         FROM [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Production BOM Header] as BOMH (nolock)
         INNER JOIN [PP_2017_PROD].dbo.[Pelletterie Palladio\$Item] as I (nolock)
             ON BOMH.[PFItem No_] = I.[No_] -- AND I.[Production BOM No_] <> I.[No_]
-        WHERE I.[Item Category Code] = 'PF' -- and I.[No_] = 'LVM44875' -- 'LVGI0518'
+        WHERE I.[Item Category Code] = 'PF'  and I.[No_] = 'LVM44875' -- 'LVGI0518'
         order by I.[No_], CASE I.[Production BOM No_] WHEN BOMH.No_ THEN 1 ELSE 2 END -- I.[Production BOM No_]
         ";
 
@@ -176,4 +176,66 @@ function inviaDatiInBatchConRetry($data, $baseApiUrl, $token, $siteid, $defid, $
     foreach ($batches as $batch) {
         inviaBatchConRetry($batch, $baseApiUrl, $token, $siteid, $defid, $maxRetries);
     }
+}
+
+function fetchAllCodes($baseUrl, $token)
+{
+    $codes = [];
+    $skip = 0;
+    $limit = 1000; // Imposta il limite di risultati per ogni richiesta
+    $hasMoreData = true;
+
+    while ($hasMoreData) {
+        $url = "$baseUrl?skip=$skip&limit=$limit";
+        $response = makeGetRequest($url, $token);
+
+        // Debug: Stampa la risposta per vedere cosa viene restituito
+        echo "URL: $url\n";
+        // echo "Response: " . json_encode($response) . "\n";
+
+        if ($response && is_array($response)) {
+            foreach ($response as $item) {
+                if (isset($item['code'])) {
+                    $codes[] = $item['code'];
+                }
+            }
+            // Controlla se ci sono più dati da recuperare
+            $hasMoreData = count($response) == $limit;
+            $skip += $limit;
+        } else {
+            $hasMoreData = false; // Termina il loop se non ci sono più dati
+        }
+    }
+
+    return $codes;
+}
+
+function makeGetRequest($url, $token)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: Bearer $token",
+        "Content-Type: application/json"
+    ]);
+    $response = curl_exec($ch);
+
+    // Debug: Stampa eventuali errori cURL
+    if (curl_errno($ch)) {
+        echo 'Error:' . curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    return json_decode($response, true);
+}
+
+
+// Funzione per recuperare i codici da un dato endpoint
+function getCodesFromEndpoint($endpoint, $token)
+{
+    $baseUrl = ASSET_API_URL . $endpoint;
+    echo "Base URL: $baseUrl\n";
+    return fetchAllCodes($baseUrl, $token);
 }

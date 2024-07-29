@@ -30,14 +30,17 @@ $username = UID;
 $password = PWD;
 
 // Recupera tutti i codici
-$codici = getCodeToUpdate();
+$codici = getCodesFromEndpoint("S01MOD", $token);
 echo "Codici estratti \n</br>";
+
 
 // Recupera i dati dal database
 $dati = recuperaDatiDalDB($serverName, $database, $username, $password);
+print_r($dati);
 
 // Filtra e correggi i dati
 $datiCorretti = filtraECorreggiDati($dati);
+
 
 // Verifica se ci sono dati da preparare
 if (!empty($datiCorretti)) {
