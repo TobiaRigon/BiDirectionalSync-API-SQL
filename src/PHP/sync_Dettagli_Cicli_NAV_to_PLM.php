@@ -7,16 +7,18 @@ require_once 'get_tkn.php';
 require_once 'config.php';
 require_once 'functions.php';
 require_once 'functions_diba.php';
-require_once 'functions_Cicli_NAV_to_PLM.php';
+require_once 'functions_Dettagli_Cicli_NAV_to_PLM.php';
 
 // Cambia numero di batch
 $numeroBatch = 4000;
 
 // Definizione delle costanti
 define('SITE_ID', 'S01');
+$siteid = SITE_ID;
 define('TABLE_CODE', 'MOD');
 $defid = SITE_ID . TABLE_CODE;
 define('MAX_BATCH_SIZE_BYTES', ((51.26 / $numeroBatch) * 1024 * 1024));
+// $docidURL = ASSET_API_URL;
 
 
 
@@ -42,6 +44,15 @@ $codesS01MOD = getCodesFromEndpoint("S01MOD", $token);
 // Recupera i dati dal database
 $dati = recuperaDatiDalDB($serverName, $database, $username, $password);
 
+// Estrai i codici dai dati recuperati
+$codiciEstratti = estraiCodici($dati);
+echo "Codici estratti:\n";
+print_r($codiciEstratti);
+
+// Recupera i docid per ogni doc_code
+$docIdArray = recuperaDocId($codiciEstratti, $token);
+echo "Array docid e doc_code:\n";
+print_r($docIdArray);
 
 // Verifica se ci sono dati da preparare
 if (!empty($dati)) {
@@ -49,14 +60,14 @@ if (!empty($dati)) {
     $datiPreparati = preparaDati($dati);
 
     // Filtra i dati in base ai codici
-    $datiFiltrati = filtraDatiPerCodici($datiPreparati, $codesS01MOD);
+    // $datiFiltrati = filtraDatiPerCodici($datiPreparati, $codesS01MOD);
 
     // Verifica se ci sono dati da inviare
-    if (!empty($datiFiltrati)) {
+    if (!empty($datiPreparati)) {
         // Invia i dati all'API in batch con retry
-        $stampa = json_encode($datiFiltrati);
+        $stampa = json_encode($datiPreparati);
         print_r($stampa);
-        inviaDatiInBatchConRetry($datiFiltrati, $baseApiUrl, $token, SITE_ID, $defid, 5); // Max retries 5
+        // inviaDatiInBatchConRetry($datiPreparati, $baseApiUrl, $token, SITE_ID, $defid, 5); // Max retries 5
     } else {
         echo "Nessun dato da inviare dopo il filtraggio\n";
     }
