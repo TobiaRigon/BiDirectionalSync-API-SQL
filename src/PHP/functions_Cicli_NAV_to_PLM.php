@@ -11,28 +11,7 @@ function recuperaDatiDalDB($serverName, $database, $username, $password)
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Definizione della query
-        // $query = "
-        //         SELECT 
-        //             'S01' as siteid,
-        //             'S01MODOPEHEA' as defid,
-        //             'FORM' as objtype,
-        //             'S01MOD' as doc_defid,
-        //             REPLACE(I.[No_],' ','�') as doc_code,
-        //             '' as doc_material,
-        //             H.[Description] as doc_description,
-        //             H.[No_] as codice,
-        //             H.[Description] as descrizione,
-        //             CASE H.[Type] WHEN 0 THEN 'P' WHEN 1 THEN 'S' END as tipo,
-        //             CASE H.[Status] WHEN 0 THEN 'N Nuovo' WHEN 1 THEN 'CE Certificato' WHEN 3 THEN 'CL Chiuso' END  as stato,
-        //             '' as fcompletato
-        //         FROM 
-        //             [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Item] (nolock) as I
-        //                 INNER JOIN [PP_2017_PROD].[dbo].[Pelletterie Palladio\$Routing Header] (nolock) as H
-        //                 ON I.[Routing No_] = H.[No_]
-        //         WHERE I.[Item Category Code]='PF' AND I.[No_] = 'LVM44875'
-
-        // ";
-
+        // Commenta AND I.[No_] = 'LVM44875' per eseguire su tutti i prodotti
         $query = "
                     -- CTE per ottenere le informazioni delle DIBA
             WITH BOMInfo AS (
@@ -89,7 +68,7 @@ function recuperaDatiDalDB($serverName, $database, $username, $password)
             ON 
                 BOMInfo.doc_code = I.[No_] AND BOMInfo.codice = I.[Production BOM No_]
             WHERE 
-                I.[Item Category Code]='PF' AND I.[No_] LIKE 'LVM448%'
+                I.[Item Category Code]='PF'  AND I.[No_] = 'LVM44875'
             ORDER BY 
                 I.[No_], BOMInfo.ordine;
         ";
@@ -104,23 +83,17 @@ function recuperaDatiDalDB($serverName, $database, $username, $password)
         return [];
     }
 }
-
 /**
  * Funzione per preparare i dati nel formato richiesto
  */
 function preparaDati($results)
 {
     $dataArray = [];
-    $ordineCounters = [];
+    $produzioneArray = [];
+    $nonProduzioneArray = [];
 
+    // Prepara i dati con l'ordine corretto
     foreach ($results as $row) {
-        $docCode = $row['doc_code'];
-
-        // Inizializza il contatore per ogni doc_code
-        if (!isset($ordineCounters[$docCode])) {
-            $ordineCounters[$docCode] = 10;
-        }
-
         $data = [
             "doc_defid" => $row['doc_defid'], // Main defid
             "doc_code" => $row['doc_code'], // Main doc code
@@ -136,16 +109,17 @@ function preparaDati($results)
             "fproduzione" => $row['fproduzione'] === 'X' // Conversione a booleano
         ];
 
-        // Aggiunge il campo 'ordine' con valore 10 se 'fproduzione' è true
+        // Se 'fproduzione' è true, assegna ordine 10
         if ($data['fproduzione'] === true) {
             $data["ordine"] = 10;
+            $produzioneArray[] = $data;
         } else {
-            $ordineCounters[$docCode] += 10;
-            $data["ordine"] = $ordineCounters[$docCode];
+            $nonProduzioneArray[] = $data;
         }
-
-        $dataArray[] = $data;
     }
+
+    // Combina i dati con 'ordine' prima e poi senza 'ordine'
+    $dataArray = array_merge($produzioneArray, $nonProduzioneArray);
 
     return $dataArray;
 }
@@ -311,7 +285,6 @@ function calcolaPesoEBatch($data, $maxSizeInBytes = MAX_BATCH_SIZE_BYTES) // 50 
 
     return [$totalSizeMB, $numBatches];
 }
-
 function fetchAllCodes($baseUrl, $token)
 {
     $codes = [];
@@ -343,7 +316,6 @@ function fetchAllCodes($baseUrl, $token)
 
     return $codes;
 }
-
 function makeGetRequest($url, $token)
 {
     $ch = curl_init();

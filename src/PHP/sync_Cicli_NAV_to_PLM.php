@@ -35,24 +35,13 @@ $database = 'PP_2017_TST';
 $username = UID;
 $password = PWD;
 
-
-// $maxSizeInBytes = 52428800;
-
 // $codesS01MAT = getCodesFromEndpoint("S01MAT", $token);
 $codesS01MOD = getCodesFromEndpoint("S01MOD", $token);
-// print_r($codesS01MOD);
-// print_r($codesS01MAT);
-
-// Recupera i parent codici dal database
-// $parent_codici = recuperaParentCodici($serverName, $database, $username, $password);
 
 
 // Recupera i dati dal database
 $dati = recuperaDatiDalDB($serverName, $database, $username, $password);
-// $json = json_encode($dati);
-// print_r($json);
-// Correggi i dati
-// $datiCorrotti = correggiDati($dati);
+
 
 // Verifica se ci sono dati da preparare
 if (!empty($dati)) {
@@ -66,8 +55,8 @@ if (!empty($dati)) {
     if (!empty($datiFiltrati)) {
         // Invia i dati all'API in batch con retry
         $stampa = json_encode($datiFiltrati);
-        print_r($stampa);
-        //inviaDatiInBatchConRetry($datiFiltrati, $baseApiUrl, $token, SITE_ID, $defid, 5); // Max retries 5
+        // print_r($stampa);
+        inviaDatiInBatchConRetry($datiFiltrati, $baseApiUrl, $token, SITE_ID, $defid, 5); // Max retries 5
     } else {
         echo "Nessun dato da inviare dopo il filtraggio\n";
     }
