@@ -64,22 +64,22 @@ function estraiCodici($dati)
     $codici = [];
 
     foreach ($dati as $row) {
-        if (isset($row['doc_code'])) {
+        if (isset($row['doc_code']) && !in_array($row['doc_code'], $codici)) {
             $codici[] = $row['doc_code'];
         }
     }
 
     return $codici;
 }
-
 /**
- * Funzione per recuperare docid per ogni doc_code
+ * Funzione per recuperare docid per ogni doc_code, evitando ricerche duplicate
  */
 function recuperaDocId($docCodes, $token)
 {
     $docIdArray = [];
+    $uniqueDocCodes = array_unique($docCodes); // Ottieni solo i codici unici
 
-    foreach ($docCodes as $docCode) {
+    foreach ($uniqueDocCodes as $docCode) {
         $url = ASSET_API_URL . "S01MOD/?code=$docCode";
         echo $url;
         $response = makeGetRequest($url, $token);
@@ -95,8 +95,20 @@ function recuperaDocId($docCodes, $token)
         }
     }
 
-    return $docIdArray;
+    // Ricostruisci l'array finale con i docid ripetuti se necessario
+    $finalDocIdArray = [];
+    foreach ($docCodes as $docCode) {
+        foreach ($docIdArray as $docIdEntry) {
+            if ($docIdEntry['doc_code'] === $docCode) {
+                $finalDocIdArray[] = $docIdEntry;
+                break;
+            }
+        }
+    }
+
+    return $finalDocIdArray;
 }
+
 /**
  * Funzione per preparare i dati nel formato richiesto
  */
