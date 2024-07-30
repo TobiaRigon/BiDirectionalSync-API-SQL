@@ -45,14 +45,10 @@ $codesS01MOD = getCodesFromEndpoint("S01MOD", $token);
 $dati = recuperaDatiDalDB($serverName, $database, $username, $password);
 
 // Estrai i codici dai dati recuperati
-$codiciEstratti = estraiCodici($dati);
-echo "Codici estratti:\n";
-print_r($codiciEstratti);
+// $codiciEstratti = estraiCodici($dati);
+// echo "Codici estratti:\n";
+// print_r($codiciEstratti);
 
-// Recupera i docid per ogni doc_code
-$docIdArray = recuperaDocId($codiciEstratti, $token);
-echo "Array docid e doc_code:\n";
-print_r($docIdArray);
 
 // Verifica se ci sono dati da preparare
 if (!empty($dati)) {

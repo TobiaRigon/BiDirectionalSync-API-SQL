@@ -48,7 +48,7 @@ function recuperaDatiDalDB($serverName, $database, $username, $password)
                 CASE H.[Status] WHEN 0 THEN 'N' WHEN 1 THEN 'C' WHEN 3 THEN 'X' END as stato,
                 '' as fcompletato,
                 CASE WHEN H.[No_] = I.[Routing No_] THEN 'X' ELSE '' END as fproduzione,  -- Colonna che indica se è in produzione
-                CAST(BOMInfo.ordine AS NVARCHAR(50)) + ' ' + BOMInfo.ordecolo as dibarif,  -- Colonna che include ordine e ordecolo
+               -- CAST(BOMInfo.ordine AS NVARCHAR(50)) + ' ' + BOMInfo.ordecolo as dibarif,  -- Colonna che include ordine e ordecolo
                 CASE BOMInfo.stato 
                     WHEN 'N' THEN 'N Nuovo'
                     WHEN 'CE' THEN 'CE Certificato'
@@ -100,7 +100,7 @@ function preparaDati($results)
             "codice" => $row['codice'], // Utilizza direttamente 'code'
             "defid" => $row['defid'], // Object defid
             "siteid" => $row['siteid'],
-            "dibarif" => $row['dibarif'],
+            // "dibarif" => $row['dibarif'],
             "doc_description" => $row['doc_description'],
             "descrizione" => $row['descrizione'], // Conversione a float
             "stato" => $row['stato'], // Gestito in correggiDati
