@@ -20,8 +20,6 @@ $defid = SITE_ID . TABLE_CODE;
 define('MAX_BATCH_SIZE_BYTES', ((51.26 / $numeroBatch) * 1024 * 1024));
 // $docidURL = ASSET_API_URL;
 
-
-
 // Carica le variabili d'ambiente
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
@@ -40,30 +38,20 @@ $password = PWD;
 // $codesS01MAT = getCodesFromEndpoint("S01MAT", $token);
 $codesS01MOD = getCodesFromEndpoint("S01MOD", $token);
 
-
 // Recupera i dati dal database
 $dati = recuperaDatiDalDB($serverName, $database, $username, $password);
-
-// Estrai i codici dai dati recuperati
-// $codiciEstratti = estraiCodici($dati);
-// echo "Codici estratti:\n";
-// print_r($codiciEstratti);
-
 
 // Verifica se ci sono dati da preparare
 if (!empty($dati)) {
     // Prepara i dati nel formato richiesto
     $datiPreparati = preparaDati($dati);
 
-    // Filtra i dati in base ai codici
-    // $datiFiltrati = filtraDatiPerCodici($datiPreparati, $codesS01MOD);
-
     // Verifica se ci sono dati da inviare
     if (!empty($datiPreparati)) {
         // Invia i dati all'API in batch con retry
         $stampa = json_encode($datiPreparati);
         print_r($stampa);
-        // inviaDatiInBatchConRetry($datiPreparati, $baseApiUrl, $token, SITE_ID, $defid, 5); // Max retries 5
+        //  inviaDatiInBatchConRetry($datiPreparati, $baseApiUrl, $token, SITE_ID, $defid, 5); // Max retries 5
     } else {
         echo "Nessun dato da inviare dopo il filtraggio\n";
     }

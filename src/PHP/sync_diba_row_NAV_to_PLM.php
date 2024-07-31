@@ -18,8 +18,6 @@ define('TABLE_CODE', 'MOD');
 $defid = SITE_ID . TABLE_CODE;
 define('MAX_BATCH_SIZE_BYTES', ((51.26 / $numeroBatch) * 1024 * 1024));
 
-
-
 // Carica le variabili d'ambiente
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
@@ -35,7 +33,6 @@ $database = 'PP_2017_TST';
 $username = UID;
 $password = PWD;
 
-
 $maxSizeInBytes = 52428800;
 
 $codesS01MAT = getCodesFromEndpoint("S01MAT", $token);
@@ -45,7 +42,6 @@ print_r($codesS01MAT);
 
 // Recupera i parent codici dal database
 $parent_codici = recuperaParentCodici($serverName, $database, $username, $password);
-
 
 // Recupera i dati dal database
 $dati = recuperaDatiDalDB($serverName, $database, $username, $password);
