@@ -215,8 +215,13 @@ function preparaDati($results)
             "phase" => $row['phase'],
             "workcgc" => $row['workgc'],
             "qty" => $row['qty'],
-            "routinglc" => $routinglc, // Use mapped routinglc value
-            "wipcode" => $wipcode, // Use mapped wipcode value
+            // Usa mappatura campi completi
+            // "routinglc" => $routinglc, // Use mapped routinglc value
+            // "wipcode" => $wipcode, // Use mapped wipcode value
+            // Usa campi grezzi
+            "routinglc" => $row['routinglc'], // Use row routinglc value
+            "wipcode" => $row['wipcode'], // Use row wipcode value
+
             "fcost" => $row['fcost'] === 'X',
             "notes" => $row['notes'],
             "dropped" => $row['dropped'] === 'X'
